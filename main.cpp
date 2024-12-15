@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+
 using namespace std;
 void ShowMenu();
 int main() {
@@ -11,4 +13,19 @@ void ShowMenu() {
     cout << endl <<"4-Delete Task";
     cout << endl <<"5-Mark Task ";
     cout << endl <<"Choose one option "<<endl;
+}
+void AddNewTask() {
+
+}
+void EditTask() {
+
+}
+void DeleteTask() {
+
+}
+void MarkTask() {
+
+}
+void ShowTask() {
+
 }
