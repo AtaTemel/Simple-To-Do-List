@@ -3,6 +3,15 @@
 
 using namespace std;
 void ShowMenu();
+
+
+
+struct TaskProperties {
+    string name;
+    int priority;
+    bool IsCompleted;
+    int DueDate;
+};
 int main() {
 ShowMenu();
 }
