@@ -3,6 +3,9 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include <limits>
+#include <regex>
+#include <sstream>
 
 using namespace std;
 
@@ -25,6 +28,7 @@ void saveTasksToFile(const vector<Task>& tasks);
 void loadTasksFromFile(vector<Task>& tasks);
 void filterAndSortTasks(vector<Task>& tasks);
 
+
 int main() {
     loadTasksFromFile(tasks);
 
@@ -32,7 +36,14 @@ int main() {
     do {
         displayMenu();
         cout << "Enter your choice: ";
-        cin >> choice;
+
+        if (!(cin >> choice)) { // Validate input
+            cin.clear(); // Clear the error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+            cout << "Invalid input. Please enter a number.\n";
+            continue; // Restart the loop
+        }
+
         cin.ignore(); // Ignore leftover newline
 
         switch (choice) {
@@ -52,12 +63,13 @@ int main() {
             break;
             case 8: cout << "Exiting program...\n";
             break;
-            default: cout << "Invalid choice. Try again.\n";
+            default: cout << "Invalid choice. Please select a valid option.\n";
         }
     } while (choice != 8);
 
     return 0;
 }
+
 
 void displayMenu() {
     cout << "\n--- To-Do List Manager ---\n";
@@ -69,26 +81,100 @@ void displayMenu() {
     cout << "6. Filter and Sort Tasks\n";
     cout << "7. Save Tasks to File\n";
     cout << "8. Exit\n";
-    if (tasks.capacity()==1) {
-        cout << endl <<"You have "<< tasks.capacity() << " task" << endl;
+
+    size_t taskCount = tasks.size();
+    cout << endl << "You have " << taskCount
+         << (taskCount == 1 ? " task" : " tasks") << endl;
+}
+
+#include <regex> // Include regex for date validation
+
+#include <regex>
+#include <sstream>
+
+bool isValidDate(const string& date) {
+    // Regex to check basic format YYYY-MM-DD
+    regex datePattern(R"(\d{4}-(\d{2})-(\d{2}))");
+    smatch matches;
+
+    if (!regex_match(date, matches, datePattern)) {
+        return false;
     }
-    else
-        cout << endl <<"You have "<< tasks.capacity() << " tasks" << endl;
+
+    // Extract year, month, and day
+    int year, month, day;
+    char dash1, dash2;
+    stringstream ss(date);
+    ss >> year >> dash1 >> month >> dash2 >> day;
+
+    // Validate the month and day
+    if (month < 1 || month > 12) {
+        return false;
+    }
+
+    if (day < 1 || day > 31) {
+        return false;
+    }
+
+    // Handle days in specific months
+    if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30) {
+        return false; // April, June, September, November have 30 days
+    }
+
+    // Handle February (leap years considered)
+    if (month == 2) {
+        bool isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+        if (day > 29 || (day == 29 && !isLeapYear)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 void addTask(vector<Task>& tasks) {
     Task newTask;
+
     cout << "Enter task title: ";
     getline(cin, newTask.title);
-    cout << "Enter due date (YYYY-MM-DD): ";
-    getline(cin, newTask.dueDate);
-    cout << "Enter priority (1-5): ";
-    cin >> newTask.priority;
-    cin.ignore();
+
+    // Check for duplicate titles
+    auto it = find_if(tasks.begin(), tasks.end(), [&newTask](const Task& task) {
+        return task.title == newTask.title;
+    });
+
+    if (it != tasks.end()) {
+        cout << "A task with this title already exists. Please use a different title.\n";
+        return;
+    }
+
+    // Validate due date
+    do {
+        cout << "Enter due date (YYYY-MM-DD): ";
+        getline(cin, newTask.dueDate);
+        if (!isValidDate(newTask.dueDate)) {
+            cout << "Invalid date. Ensure the format is YYYY-MM-DD, and the month/day are valid.\n";
+        }
+    } while (!isValidDate(newTask.dueDate));
+
+    // Validate priority input
+    do {
+        cout << "Enter priority (1-100): ";
+        cin >> newTask.priority;
+        if (newTask.priority < 1 || newTask.priority > 100) {
+            cout << "Invalid priority. Please enter a number between 1 and 100.\n";
+        }
+    } while (newTask.priority < 1 || newTask.priority > 100);
+
+    cin.ignore(); // Ignore leftover newline
     newTask.completed = false;
     tasks.push_back(newTask);
-    cout << "Task added successfully."<<endl;
+    cout << "Task added successfully.\n";
 }
+
+
+
+
 
 void editTask(vector<Task>& tasks) {
     int index;
