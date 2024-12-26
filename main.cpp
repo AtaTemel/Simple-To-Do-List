@@ -33,6 +33,8 @@ int main() {
         cout << "Enter your choice: " << endl;
 
         if (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(10000, '\n');
             cout << "Invalid input. Please enter a number." << endl;
             continue;
         }
@@ -41,10 +43,10 @@ int main() {
 
         switch (choice) {
             case 1: addTask(tasks); break;
-            case 2: editTask(tasks); break;
-            case 3: deleteTask(tasks); break;
-            case 4: markTaskCompleted(tasks); break;
-            case 5: viewTasks(tasks); break;
+            case 2: deleteTask(tasks); break;
+            case 3: editTask(tasks);break;
+            case 4: viewTasks(tasks); break;
+            case 5: markTaskCompleted(tasks);break;
             case 6: filterAndSortTasks(tasks); break;
             case 7: saveTasksToFile(tasks); break;
             case 8: cout << "Exiting program..." << endl; break;
@@ -58,10 +60,10 @@ int main() {
 void displayMenu() {
     cout << endl << "--- To-Do List Manager ---" << endl;
     cout << "1. Add Task" << endl;
-    cout << "2. Edit Task" << endl;
-    cout << "3. Delete Task" << endl;
-    cout << "4. Mark Task as Completed" << endl;
-    cout << "5. View Tasks" << endl;
+    cout << "2. Delete Task"<< endl;
+    cout << "3. Edit Task"<< endl;
+    cout << "4. View Tasks" << endl;
+    cout << "5. Mark Task as Completed"<< endl;
     cout << "6. Filter and Sort Tasks" << endl;
     cout << "7. Save Tasks to File" << endl;
     cout << "8. Exit" << endl;
@@ -112,6 +114,7 @@ void addTask(vector<Task>& tasks) {
         cin.ignore(10000, '\n');
         cout << "Invalid priority. Please enter a number between 1 and 100: " << endl;
     }
+    cin.ignore();
 
     newTask.completed = false;
     tasks.push_back(newTask);
@@ -122,6 +125,7 @@ void editTask(vector<Task>& tasks) {
     int index;
     cout << "Enter task number to edit: " << endl;
     cin >> index;
+    cin.ignore();
 
     if (index > 0 && index <= tasks.size()) {
         Task& task = tasks[index - 1];
@@ -147,6 +151,7 @@ void deleteTask(vector<Task>& tasks) {
     int index;
     cout << "Enter task number to delete: " << endl;
     cin >> index;
+    cin.ignore();
 
     if (index > 0 && index <= tasks.size()) {
         tasks.erase(tasks.begin() + index - 1);
@@ -161,6 +166,8 @@ void markTaskCompleted(vector<Task>& tasks)//this function takes the number for 
     int index;
     cout << "Enter task number to mark as completed: " << endl;
     cin >> index;
+    cin.ignore();
+
     if (index > 0 && index <= tasks.size()) {
         tasks[index - 1].completed = true;
         cout << "Task marked as completed." << endl;
