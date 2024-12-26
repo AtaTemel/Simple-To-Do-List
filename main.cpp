@@ -33,8 +33,6 @@ int main() {
         cout << "Enter your choice: " << endl;
 
         if (!(cin >> choice)) {
-            cin.clear();
-            cin.ignore(10000, '\n');
             cout << "Invalid input. Please enter a number." << endl;
             continue;
         }
@@ -80,7 +78,9 @@ bool isValidDate(const string& date) {
     if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30) return false;
     if (month == 2) {
         bool isLeap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-        if (day > (isLeap ? 29 : 28)) return false;
+        if (day > 29 || (day > 28 && !isLeap)) {
+            return false;
+        }
     }
     return true;
 }
@@ -112,7 +112,6 @@ void addTask(vector<Task>& tasks) {
         cin.ignore(10000, '\n');
         cout << "Invalid priority. Please enter a number between 1 and 100: " << endl;
     }
-    cin.ignore();
 
     newTask.completed = false;
     tasks.push_back(newTask);
@@ -123,7 +122,6 @@ void editTask(vector<Task>& tasks) {
     int index;
     cout << "Enter task number to edit: " << endl;
     cin >> index;
-    cin.ignore();
 
     if (index > 0 && index <= tasks.size()) {
         Task& task = tasks[index - 1];
@@ -149,7 +147,6 @@ void deleteTask(vector<Task>& tasks) {
     int index;
     cout << "Enter task number to delete: " << endl;
     cin >> index;
-    cin.ignore();
 
     if (index > 0 && index <= tasks.size()) {
         tasks.erase(tasks.begin() + index - 1);
@@ -159,12 +156,11 @@ void deleteTask(vector<Task>& tasks) {
     }
 }
 
-void markTaskCompleted(vector<Task>& tasks) {
+void markTaskCompleted(vector<Task>& tasks)//this function takes the number for the task from the user and marks it as completed.
+{
     int index;
     cout << "Enter task number to mark as completed: " << endl;
     cin >> index;
-    cin.ignore();
-
     if (index > 0 && index <= tasks.size()) {
         tasks[index - 1].completed = true;
         cout << "Task marked as completed." << endl;
@@ -183,16 +179,22 @@ void viewTasks(const vector<Task>& tasks) {
              << " | Status: " << (task.completed ? "Completed" : "Pending") << endl;
         if (task.completed) ++completedCount;
     }
-    cout << "Completion Percentage: "
-         << (tasks.empty() ? 0 : (completedCount * 100) / tasks.size()) << "%" << endl;
+    if (tasks.empty()) {
+        cout << "Completion Percentage: 0%" << endl;
+    } else {
+        int completionPercentage = (completedCount * 100) / tasks.size();
+        cout << "Completion Percentage: " << completionPercentage << "%" << endl;
+    }
+
 }
 
 void saveTasksToFile(const vector<Task>& tasks) {
     ofstream outFile("tasks.txt");
-    for (const auto& task : tasks) {
-        outFile << task.title << endl << task.dueDate << endl
-                << task.priority << endl << task.completed << endl;
+    for (size_t i = 0; i < tasks.size(); ++i) {
+        outFile << tasks[i].title << endl << tasks[i].dueDate << endl
+                << tasks[i].priority << endl << tasks[i].completed << endl;
     }
+
     cout << "Tasks saved successfully." << endl;
 }
 
@@ -223,12 +225,13 @@ void filterAndSortTasks(vector<Task>& tasks) {
         cout << "Enter status (1 for Completed, 0 for Pending): " << endl;
         cin >> status;
         cin.ignore();
-        for (const auto& task : tasks) {
-            if (task.completed == status) {
-                cout << task.title << " | Due: " << task.dueDate
-                     << " | Priority: " << task.priority << endl;
+        for (size_t i = 0; i < tasks.size(); ++i) {
+            if (tasks[i].completed == status) {
+                cout << tasks[i].title << " | Due: " << tasks[i].dueDate
+                     << " | Priority: " << tasks[i].priority << endl;
             }
         }
+
     } else if (choice == 2) {
         for (size_t i = 0; i < tasks.size(); ++i) {
             for (size_t j = i + 1; j < tasks.size(); ++j) {
