@@ -161,7 +161,7 @@ void deleteTask(vector<Task>& tasks) {
     }
 }
 
-void markTaskCompleted(vector<Task>& tasks)//this function takes the number for the task from the user and marks it as completed.
+void markTaskCompleted(vector<Task>& tasks)
 {
     int index;
     cout << "Enter task number to mark as completed: " << endl;
