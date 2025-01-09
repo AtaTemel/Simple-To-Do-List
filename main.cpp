@@ -29,7 +29,10 @@ void filterAndSortTasks(vector<Task>& tasks);     // Filters and sorts tasks bas
 bool isValidDate(const string& date);             // Validates the format of a date string
 
 int main() {
+
     // Precondition: The program should have access to the required file for loading tasks.
+    // Post condition: All tasks will be saved back to the file before exiting the program.
+
     loadTasksFromFile(tasks);  // Load tasks from file at the start of the program
 
     int choice;
@@ -59,14 +62,16 @@ int main() {
             default: cout << "Invalid choice. Please select a valid option." << endl;  // Handle invalid choice
         }
     } while (choice != 8);
-
-    // Post condition: All tasks will be saved back to the file before exiting the program.
     return 0;
 }
 
 
 // Function to display the menu options to the user
 void displayMenu() {
+
+    // Precondition: None
+    // Post condition: The menu options will be displayed to the user, showing the current number of tasks.
+
     cout << endl << "--- To-Do List Manager ---" << endl;
     cout << "1. Add Task" << endl;
     cout << "2. Delete Task" << endl;
@@ -77,9 +82,6 @@ void displayMenu() {
     cout << "7. Save Tasks to File" << endl;
     cout << "8. Exit" << endl;
     cout << "You have " << tasks.size() << (tasks.size() == 1 ? " task" : " tasks") << endl;
-
-    // Precondition: None
-    // Post condition: The menu options will be displayed to the user, showing the current number of tasks.
 }
 
 // Function to validate the format of a date string (expected format: YYYY-MM-DD)
